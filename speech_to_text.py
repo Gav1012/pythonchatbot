@@ -1,2 +1,6 @@
 import os
-print("hello from speech to text file")
+import azure.cognitiveservices.speech as speechsdk
+
+azure_speechconfig = None
+azure_audioconfig = None
+azure_speechrecognizer = None
