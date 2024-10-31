@@ -31,10 +31,9 @@ class ChatGPTDirector:
         print(response)
         return response
 
-
+# this is an example of, run file by itself to test/see if the API key is working and such 
 if __name__ == '__main__':
     chatgpt_dir = ChatGPTDirector()
-    # chatgpt_dir.exchange("Hello, how are you?")
     # example of giving the AI background of what it's going to be/behave/etc and appends directly to history
     # this part can be changed out to any character that you want, this is just for an example
     cayde_history_test = {"role": "system", "content": "You are Cayde-6 from the game series Destiny by Bungie, and you only talk like you are him. Keep it in-universe."}
