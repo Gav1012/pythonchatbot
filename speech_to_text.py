@@ -1,15 +1,29 @@
 import os
+from dotenv import load_dotenv
 import azure.cognitiveservices.speech as speechsdk
 
-# subscription_key = API KEY
-# service_region = REGION
+class AzureSpeechToText:
+    def __init__(self):
+        load_dotenv()
+        try:
+            self.azure_speechconfig = speechsdk.SpeechConfig(subscription=os.getenv("AZURE_SPEECH_KEY"), region=os.getenv("AZURE_REGIONKEY"))
+        except TypeError:
+            print("Error: Azure Speech Key or Region Key not found")
+    
+    def transcribe_from_mic(self):
+        audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+        speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=audio_config)
 
-# azure_speechconfig = None
-# azure_audioconfig = None
-# azure_speechrecognizer = None
+        print("Hot Mic Mode...")
 
-azure_speechconfig = speech.sdk.SpeechConfig(subscription=subscription_key, region=region)
+        result = speech_recognizer.recognize_once()
 
-synthesizer = speechsdk.SpeechSynthesizer(azure_audioconfig=azure_audioconfig)
+        if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            return result.text
+        elif result.reason == speechsdk.ResultReason.NoMatch:
+            return "No Match"
+        elif result.reason == speechsdk.ResultReason.Canceled:
+            return "Speech Cancelled"
 
-result = synthesizer.speak_text_async(text).get()
+if __name__ == '__main__':
+    speechtotext_azure = AzureSpeechToText()
