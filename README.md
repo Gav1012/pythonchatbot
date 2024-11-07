@@ -1,8 +1,11 @@
 # python chat bot
-I wanted to create a chatbot in python using the ChatGPT API. \
-Besides typing to communicate with the chatbot, I want to experiment \
-with including voice recognition or even text to speech (will research more) \
-Current looking at using Microsoft Azure TTS to listen to the mic \
+I wanted to create a chatbot in using Python and the OpenAI API that you use to talk to \
+any person, character, or thing that a user wants to but with more interactivity than just \
+type back and forth. With that, I am using Microsoft Azure to power the speech to text to \
+allow for seamless communication between the user and the bot (depending on processing of \
+the user's input). Then using the text to speech to then voice the bot's response. Possibly \
+looking into other ways to have custom voices for the bot.
+
 
 ## Getting Started
 Have the latest version of Python installed. Then clone the repo locally \
