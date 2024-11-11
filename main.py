@@ -1,8 +1,10 @@
 # imports from other supplemental files (more will be added)
 from chatgpt import ChatGPTDirector
+from speech_to_text import AzureSpeechToText
 
 #sets up chatgpt class from chatgpt file
 chatgpt_director = ChatGPTDirector()
+azure_speech_to_text = AzureSpeechToText()
 # use this to setup how the bot will behave including background and how it should respond
 # this message will be added to kickstart the bot convo
 INITIAL_MESSAGE = {"role": "system", "content": "You are Spider-Man and you will respond just like him"}
