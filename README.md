@@ -17,6 +17,12 @@ Install OpenAI package
 ```bash
 pip install openai
 ```
+
+Install Microsoft Azure Text-to-Speech
+```bash
+pip install azure-cognitiveservices-speech
+```
+
 Install dotenv for .env file reading
 ```bash
 pip install python-dotenv
