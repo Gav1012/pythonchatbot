@@ -15,5 +15,6 @@ chatgpt_director.convo_history.append(INITIAL_MESSAGE)
 # want to add keyboard input to activate for when voice recognition is added
 # might add a way to differentiate between using keyboard vs using microphone (might be affected by input/key)
 while True:
-    user_input = input("type out a message to speak to a character (type 'exit to quit): ")
+    #user_input = input("type out a message to speak to a character (type 'exit to quit): ")
+    user_input = azure_speech_to_text.transcribe_from_mic()
     chatgpt_director.exchange(user_input)
