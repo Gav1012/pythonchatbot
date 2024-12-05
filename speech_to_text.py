@@ -36,6 +36,27 @@ class AzureSpeechToText:
         elif result.reason == speechsdk.ResultReason.Canceled:
             print("speech recognition was cancelled")
         return result.text
+    
+
+    def transcribe_from_mic_continuous(self):
+        self.audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+        self.speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=self.audio_config)
+
+        done = False
+        def stop_cb(evt):
+            self.speech_recognizer.stop_continuous_recognition()
+            nonlocal done
+            done = True
+
+        self.speech_recognizer.recognizing.connect(lambda evt: print('RECOGNIZING: {}'.format(evt)))
+        self.speech_recognizer.recognized.connect(lambda evt: print('RECOGNIZED: {}'.format(evt)))
+        self.speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
+        self.speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
+        self.speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
+        
+        self.speech_recognizer.session_stopped.connect(stop_cb)
+        self.speech_recognizer.canceled.connect(stop_cb)
+
 
 # example of speech being used in file
 if __name__ == '__main__':
