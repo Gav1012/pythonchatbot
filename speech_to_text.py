@@ -43,6 +43,7 @@ class AzureSpeechToText:
         self.speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=self.audio_config)
 
         done = False
+
         def stop_cb(evt):
             self.speech_recognizer.stop_continuous_recognition()
             nonlocal done
@@ -50,12 +51,23 @@ class AzureSpeechToText:
 
         self.speech_recognizer.recognizing.connect(lambda evt: print('RECOGNIZING: {}'.format(evt)))
         self.speech_recognizer.recognized.connect(lambda evt: print('RECOGNIZED: {}'.format(evt)))
-        self.speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
-        self.speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
-        self.speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
-        
+        # self.speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
+        # self.speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
+        # self.speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
         self.speech_recognizer.session_stopped.connect(stop_cb)
         self.speech_recognizer.canceled.connect(stop_cb)
+
+        result_future = self.speech_recognizer.start_continuous_recognition_async()
+        result_future.get()
+        print('Continuous Recognition is now running, say something.')
+
+        while not done:
+            print('type "stop" then enter when done')
+            stop = input()
+            if (stop.lower() == "stop"):
+                print('Stopping async recognition.')
+                self.speech_recognizer.stop_continuous_recognition_async()
+                break
 
 
 # example of speech being used in file
