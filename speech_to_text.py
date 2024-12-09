@@ -1,4 +1,6 @@
 import os
+import keyboard
+import time
 from dotenv import load_dotenv
 import azure.cognitiveservices.speech as speechsdk
 
@@ -38,37 +40,46 @@ class AzureSpeechToText:
         return result.text
     
 
-    def transcribe_from_mic_continuous(self):
-        self.audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+    def transcribe_from_mic_continuous(self, stop_key = 'p'):
+        # self.audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
         self.speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=self.audio_config)
 
         done = False
 
+        def recognizing_cb(evt: speechsdk.SpeechRecognitionEventArgs):
+            print('RECOGNIZING: {}'.format(evt))
+
+        def recognized_cb(evt: speechsdk.SpeechRecognitionEventArgs):
+            print('RECOGNIZED: {}'.format(evt))
+
         def stop_cb(evt):
-            self.speech_recognizer.stop_continuous_recognition()
+            print('CLOSING on {}'.format(evt))
             nonlocal done
             done = True
 
-        self.speech_recognizer.recognizing.connect(lambda evt: print('RECOGNIZING: {}'.format(evt)))
-        self.speech_recognizer.recognized.connect(lambda evt: print('RECOGNIZED: {}'.format(evt)))
-        # self.speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
-        # self.speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
-        # self.speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
+        # self.speech_recognizer.recognizing.connect(recognizing_cb)
+        self.speech_recognizer.recognized.connect(recognized_cb)
         self.speech_recognizer.session_stopped.connect(stop_cb)
         self.speech_recognizer.canceled.connect(stop_cb)
+
+        all_results = []
+        def handle_final_result(evt):
+            all_results.append(evt.result.text)
+        self.speech_recognizer.recognized.connect(handle_final_result)
 
         result_future = self.speech_recognizer.start_continuous_recognition_async()
         result_future.get()
         print('Continuous Recognition is now running, say something.')
 
         while not done:
-            print('type "stop" then enter when done')
-            stop = input()
-            if (stop.lower() == "stop"):
+            if keyboard.read_key() == stop_key:
                 print('Stopping async recognition.')
                 self.speech_recognizer.stop_continuous_recognition_async()
                 break
 
+        final_result = " ".join(all_results).strip()
+        print(f"\n\nHeres the result we got!\n\n{final_result}\n\n")
+        return final_result
 
 # example of speech being used in file
 if __name__ == '__main__':
@@ -76,5 +87,6 @@ if __name__ == '__main__':
     
     # testing that microphone is being picked up and displaying the recognized speech
     while True:
-        result = speechtotext_azure.transcribe_from_mic()
-        print("RESULT: ", result)
+        # result = speechtotext_azure.transcribe_from_mic()
+        result = speechtotext_azure.transcribe_from_mic_continuous()
+        print(f"\n\nHERE IS THE RESULT:\n{result}")
