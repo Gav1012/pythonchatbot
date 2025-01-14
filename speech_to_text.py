@@ -89,4 +89,4 @@ if __name__ == '__main__':
     while True:
         # result = speechtotext_azure.transcribe_from_mic()
         result = speechtotext_azure.transcribe_from_mic_continuous()
-        print(f"\n\nHERE IS THE RESULT:\n{result}")
+        print(f"\n\nWhat did we get (inside main func):\n{result}")
