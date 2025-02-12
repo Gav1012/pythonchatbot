@@ -45,7 +45,8 @@ class AzureSpeechToText:
         self.speech_recognizer = speechsdk.SpeechRecognizer(speech_config=self.speech_config, audio_config=self.audio_config)
 
         done = False
-
+        
+        #stuff needed to make it run, will elaborate later
         def recognizing_cb(evt: speechsdk.SpeechRecognitionEventArgs):
             print('RECOGNIZING: {}'.format(evt))
 
@@ -62,21 +63,24 @@ class AzureSpeechToText:
         self.speech_recognizer.session_stopped.connect(stop_cb)
         self.speech_recognizer.canceled.connect(stop_cb)
 
+        # array holds all inputs if there is some discrepency between the user speaking
         all_results = []
         def handle_final_result(evt):
             all_results.append(evt.result.text)
         self.speech_recognizer.recognized.connect(handle_final_result)
 
+        # handles the continuous input from user
         result_future = self.speech_recognizer.start_continuous_recognition_async()
         result_future.get()
         print('Continuous Recognition is now running, say something.')
 
+        # keeps reading from the mic until the stop key is pressed
         while not done:
             if keyboard.read_key() == stop_key:
                 print('Stopping async recognition.')
                 self.speech_recognizer.stop_continuous_recognition_async()
                 break
-
+        # joins all the spoken text together to be processed by the AI
         final_result = " ".join(all_results).strip()
         print(f"\n\nHeres the result we got!\n\n{final_result}\n\n")
         return final_result
